@@ -74,8 +74,35 @@ const dbCountUser = (async (body) => {
 
 });
 
+const dbUpdateUser = (async(body) =>{
+    const {
+        query,
+        update,
+        option,
+        multiple
+    } = body;
+
+
+    let res = {};
+    if (multiple) {
+        res = await User.updateMany(query, update, option);
+    } else {
+        res = await User.updateOne(query, update, option);
+    }
+
+    const {
+        acknowledged,
+    } = res;
+
+    if (!acknowledged) {
+        throw new Error('Not Updated!');
+    }
+    return res;
+})
+
 module.exports = {
     DbAddUser,
     DbFindUser,
-    dbCountUser
+    dbCountUser,
+    dbUpdateUser
 };

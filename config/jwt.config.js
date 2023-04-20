@@ -14,7 +14,7 @@ module.exports = {
             token = token.split(' ')[1];
             if (token) {
                 try {
-                    const a = await jwt.verify(token, process.env.JWT_SECRET_KEY);
+                    const a = await jwt.verify(token, 'secret');
                     req.user = a;
                     next();
                 } catch (err) {
@@ -30,19 +30,6 @@ module.exports = {
         }
     },
 
-    parseToken: async (req, res, next) => {
 
-        let token = req.headers['authorization'];
-        if (token) {
-            token = token.split(' ')[1];
-            try {
-                const a = await jwt.verify(token, process.env.JWT_SECRET_KEY);
-                req.user = a;
-            } catch (err) {
-                req.user = null;
-            }
-        }
-        next();
-    },
 
 };

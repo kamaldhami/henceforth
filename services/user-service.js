@@ -2,7 +2,8 @@
 const {
   DbAddUser,
   DbFindUser,
-  dbCountUser
+  dbCountUser,
+  dbUpdateUser
 } = require("../model/User");
 const bcrypt = require('bcrypt')
 const { generateToken } = require("../config/jwt.config");
@@ -61,8 +62,55 @@ const loginSignUpService = tryCatchHandler(async (body) => {
 
 })
 
+const searchService = tryCatchHandler(async (body) => {
+
+  const query = { $text: { $search: body.search } };
+
+  const totalRecords = await dbCountUser({
+    query: query
+  });
+  let records = [];
+
+  if (totalRecords) {
+    records = await DbFindUser({
+      query: query,
+      sort: body.sort,
+      project: body.project,
+      limit: body.limit,
+      skip: body.skip,
+      multiple: true
+    });
+  }
+
+  return {
+    records,
+    totalRecords
+  };
+
+})
+
+const serviceMark = tryCatchHandler(async (body) => {
+
+
+  const {
+    id,
+    mark
+  } = body;
+  const response = await dbUpdateUser({
+    query: {
+      _id: mongoose.Types.ObjectId(id)
+    },
+    update: {
+      $set: {
+        mark
+      }
+    }
+  });
+  return response;
+})
 
 module.exports = {
-  
-  loginSignUpService
+  searchService,
+  loginSignUpService,
+  serviceMark
 };
